@@ -4,16 +4,16 @@ from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QLayout, QLab
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 from typing import NoReturn as Unit, Iterable
 
-from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX
+from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, APP_TITLE
 
 
 class MainWindow(QMainWindow):  # {
-    def __init__(self, title: str, iconSmallPath: str, iconLargePath: str):  # {
+    def __init__(self, iconSmallPath: str, iconLargePath: str):  # {
         super().__init__()
-        self.__initWidgets(title, iconSmallPath, iconLargePath)
+        self.__initWidgets(iconSmallPath, iconLargePath)
     # }
 
-    def __initWidgets(self, title: str, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
+    def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
         # TODO:
         #  We should init our widgets here. They are:
         #  1. DONE: Title
@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):  # {
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout()
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
-        root.addLayout(self.__getTitleLayout(title, iconLargePath))
+        root.addLayout(self.__getTitleLayout(APP_TITLE, iconLargePath))
         for it in self.__getFilenameEditor():  # {
             if (isinstance(it, QLayout)):  # {
                 root.addLayout(it)
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):  # {
         self.scroll.setWidgetResizable(1)
         self.scroll.setWidget(self.widget)
         self.setCentralWidget(self.scroll)
-        self.setWindowTitle(title)
+        self.setWindowTitle(APP_TITLE)
         self.setWindowIcon(QIcon(iconSmallPath))
         self.showMaximized()
     # }
