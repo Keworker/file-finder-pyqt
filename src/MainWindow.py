@@ -1,10 +1,11 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
-    QRadioButton
+    QRadioButton, QTextEdit, QCheckBox
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 from typing import NoReturn as Unit, Iterable
 
-from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, APP_TITLE
+from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, APP_TITLE, HINT_EDIT_FILE_CONTENT, \
+    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE
 
 
 class MainWindow(QMainWindow):  # {
@@ -19,34 +20,41 @@ class MainWindow(QMainWindow):  # {
         #  1. DONE: Title
         #  2. DONE: Radio group file mask / regex
         #  3. DONE: Edit text for files search rules
-        #  4. Checkbox search in body
-        #  5. Radio group simple search / ignore spaces / regex
-        #  6. Large edit text for searching in body
+        #  4. DONE: Checkbox search in body
+        #  5. Half-done: Radio group simple search / ignore spaces / regex
+        #  6. DONE: Large edit text for searching in body
         #  7. Log in with GitHub button - just addition feature
         #  8. Repository for searching (author/repo-name) - just addition feature
         #  9. List with results
+        #  10. Select directory to search
         self.scroll = QScrollArea()
-        self.widget = QWidget()
-        root: QVBoxLayout = QVBoxLayout()
-        root.setAlignment(Qt.AlignmentFlag.AlignTop)
-        root.addLayout(self.__getTitleLayout(APP_TITLE, iconLargePath))
-        for it in self.__getFilenameEditor():  # {
-            if (isinstance(it, QLayout)):  # {
-                root.addLayout(it)
-            # }
-            else:  # {
-                root.addWidget(it)
-            # }
-        # }
-        self.widget.setLayout(root)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scroll.setWidgetResizable(1)
+        self.widget = QWidget()
+        root: QVBoxLayout = QVBoxLayout(self.widget)
+        root.setAlignment(Qt.AlignmentFlag.AlignTop)
+        root.addLayout(self.__getTitleLayout(APP_TITLE, iconLargePath))
+        self.__addAll(root, self.__getFilenameEditor())
+        self.__addAll(root, self.__getContentEditor())
         self.scroll.setWidget(self.widget)
         self.setCentralWidget(self.scroll)
         self.setWindowTitle(APP_TITLE)
         self.setWindowIcon(QIcon(iconSmallPath))
         self.showMaximized()
+    # }
+
+    # noinspection PyUnresolvedReferences
+    @staticmethod
+    def __addAll(context: QLayout, elements: Iterable[QObject]) -> Unit:  # {
+        for it in elements:  # {
+            if (isinstance(it, QLayout)):  # {
+                context.addLayout(it)
+            # }
+            else:  # {
+                context.addWidget(it)
+            # }
+        # }
     # }
 
     @staticmethod
@@ -65,15 +73,41 @@ class MainWindow(QMainWindow):  # {
         return titleContainer
     # }
 
-    def __getFilenameEditor(self) -> Iterable[QWidget]:  # {
+    def __getFilenameEditor(self) -> Iterable[QObject]:  # {
         self.__filenameEditor: QLineEdit = QLineEdit()
         self.__filenameEditor.setPlaceholderText(HINT_EDIT_FILENAME)
-        self.__filenameButtonGroup: QHBoxLayout = QHBoxLayout()
-        extensionRadio: QRadioButton = QRadioButton(USE_EXTENSION)
-        extensionRadio.click()
-        regExRadio: QRadioButton = QRadioButton(USE_REG_EX)
-        self.__filenameButtonGroup.addWidget(extensionRadio)
-        self.__filenameButtonGroup.addWidget(regExRadio)
-        return [self.__filenameEditor, self.__filenameButtonGroup]
+        buttonGroup: QHBoxLayout = QHBoxLayout()
+        self.__extensionRadio: QRadioButton = QRadioButton(USE_EXTENSION)
+        self.__extensionRadio.click()
+        self.__regExRadio: QRadioButton = QRadioButton(USE_REG_EX)
+        buttonGroup.addWidget(self.__extensionRadio)
+        buttonGroup.addWidget(self.__regExRadio)
+        return [self.__filenameEditor, buttonGroup]
+    # }
+
+    def __getContentEditor(self) -> Iterable[QObject]:  # {
+        self.__fileContentEditor: QTextEdit = QTextEdit()
+        self.__fileContentEditor.setPlaceholderText(HINT_EDIT_FILE_CONTENT)
+        self.__useContentCheckbox: QCheckBox = QCheckBox(USE_CONTENT)
+        # noinspection PyUnresolvedReferences
+        self.__useContentCheckbox.stateChanged.connect(self.__onCheckboxStateChanged)
+        buttonGroup: QHBoxLayout = QHBoxLayout()
+        self.__defaultRadio: QRadioButton = QRadioButton(DEFAULT_SEARCH)
+        self.__defaultRadio.click()
+        self.__ignoreWhitespaceRadio: QRadioButton = QRadioButton(IGNORE_WHITESPACE)
+        self.__regExContentRadio: QRadioButton = QRadioButton(USE_REG_EX)
+        buttonGroup.addWidget(self.__defaultRadio)
+        buttonGroup.addWidget(self.__ignoreWhitespaceRadio)
+        buttonGroup.addWidget(self.__regExContentRadio)
+        self.__onCheckboxStateChanged(False)  # TODO: Make radio groups separated
+        return [self.__useContentCheckbox, buttonGroup, self.__fileContentEditor]
+    # }
+
+    def __onCheckboxStateChanged(self, state: bool) -> Unit:  # {
+        self.__fileContentEditor.setReadOnly(not state)
+        self.__defaultRadio.setVisible(state)
+        self.__ignoreWhitespaceRadio.setVisible(state)
+        self.__regExContentRadio.setVisible(state)
+        self.__fileContentEditor.setVisible(state)
     # }
 # }
