@@ -1,7 +1,10 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, QLayout, QScrollArea, QWidget
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
+    QRadioButton
 from PyQt6.QtGui import QIcon, QPixmap, QFont
-from typing import NoReturn as Unit
+from typing import NoReturn as Unit, Iterable
+
+from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX
 
 
 class MainWindow(QMainWindow):  # {
@@ -14,8 +17,8 @@ class MainWindow(QMainWindow):  # {
         # TODO:
         #  We should init our widgets here. They are:
         #  1. DONE: Title
-        #  2. Radio group file mask / regex
-        #  3. Edit text for files search rules
+        #  2. DONE: Radio group file mask / regex
+        #  3. DONE: Edit text for files search rules
         #  4. Checkbox search in body
         #  5. Radio group simple search / ignore spaces / regex
         #  6. Large edit text for searching in body
@@ -27,6 +30,14 @@ class MainWindow(QMainWindow):  # {
         root: QVBoxLayout = QVBoxLayout()
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
         root.addLayout(self.__getTitleLayout(title, iconLargePath))
+        for it in self.__getFilenameEditor():  # {
+            if (isinstance(it, QLayout)):  # {
+                root.addLayout(it)
+            # }
+            else:  # {
+                root.addWidget(it)
+            # }
+        # }
         self.widget.setLayout(root)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -52,5 +63,17 @@ class MainWindow(QMainWindow):  # {
         titleContainer.addWidget(icon)
         titleContainer.addWidget(title)
         return titleContainer
+    # }
+
+    def __getFilenameEditor(self) -> Iterable[QWidget]:  # {
+        self.__filenameEditor: QLineEdit = QLineEdit()
+        self.__filenameEditor.setPlaceholderText(HINT_EDIT_FILENAME)
+        self.__filenameButtonGroup: QHBoxLayout = QHBoxLayout()
+        extensionRadio: QRadioButton = QRadioButton(USE_EXTENSION)
+        extensionRadio.click()
+        regExRadio: QRadioButton = QRadioButton(USE_REG_EX)
+        self.__filenameButtonGroup.addWidget(extensionRadio)
+        self.__filenameButtonGroup.addWidget(regExRadio)
+        return [self.__filenameEditor, self.__filenameButtonGroup]
     # }
 # }
