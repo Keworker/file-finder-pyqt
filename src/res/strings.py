@@ -12,3 +12,4 @@ HINT_EDIT_FILE_CONTENT: str = """signed main(void) {
     return 0i32;
 }
 """
+SEARCH_FOR_FILES: str = "Start search"
