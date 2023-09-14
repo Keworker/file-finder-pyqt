@@ -15,18 +15,6 @@ class MainWindow(QMainWindow):  # {
     # }
 
     def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
-        # TODO:
-        #  We should init our widgets here. They are:
-        #  1. DONE: Title
-        #  2. DONE: Radio group file mask / regex
-        #  3. DONE: Edit text for files search rules
-        #  4. DONE: Checkbox search in body
-        #  5. DONE: Radio group simple search / ignore spaces / regex
-        #  6. DONE: Large edit text for searching in body
-        #  7. Log in with GitHub button - just addition feature
-        #  8. Repository for searching (author/repo-name) - just addition feature
-        #  9. List with results
-        #  10. Select directory to search
         self.scroll = QScrollArea()
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
