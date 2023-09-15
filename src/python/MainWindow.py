@@ -1,10 +1,12 @@
+from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, \
+    QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
     QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton
 from PyQt6.QtGui import QIcon, QPixmap, QFont
-from typing import NoReturn as Unit, Iterable
 
-from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, APP_TITLE, HINT_EDIT_FILE_CONTENT, \
+from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
+    APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES
 
 
@@ -15,10 +17,11 @@ class MainWindow(QMainWindow):  # {
     # }
 
     def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
-        self.scroll = QScrollArea()
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scroll.setWidgetResizable(1)
+        scroll: QScrollArea = QScrollArea()
+        self.scroll: QScrollArea = scroll
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(1)
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout(self.widget)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -26,7 +29,7 @@ class MainWindow(QMainWindow):  # {
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
         root.addWidget(self.__getSearchButton())
-        self.scroll.setWidget(self.widget)
+        scroll.setWidget(self.widget)
         self.setCentralWidget(self.scroll)
         self.setWindowTitle(APP_TITLE)
         self.setWindowIcon(QIcon(iconSmallPath))

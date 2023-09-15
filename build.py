@@ -1,9 +1,8 @@
-import PyInstaller.__main__
 import os as OS
+import PyInstaller.__main__
 
 from src.res.drawable import ASSETS_DIR, APP_ICON_256, ASSETS_PLACEHOLDER
 from src.res.strings import APP_TITLE
-
 
 PyInstaller.__main__.run(
     [
