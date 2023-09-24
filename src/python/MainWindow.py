@@ -2,12 +2,12 @@ from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
-    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton
+    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton, QFileDialog
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
-    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES
+    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
 
 
 class MainWindow(QMainWindow):  # {
@@ -65,6 +65,10 @@ class MainWindow(QMainWindow):  # {
         return titleContainer
     # }
 
+    def __getPathDialog(self) -> str:  # {
+        return QFileDialog.getExistingDirectory(self, SELECT_DIRECTORY)
+    # }
+    
     def __getFilenameEditor(self, context: QLayout) -> Iterable[QObject]:  # {
         self.__filenameEditor: QLineEdit = QLineEdit()
         self.__filenameEditor.setPlaceholderText(HINT_EDIT_FILENAME)
@@ -118,6 +122,6 @@ class MainWindow(QMainWindow):  # {
     # }
 
     def __onSearchPressed(self) -> Unit:  # {
-        pass
+        self.__getPathDialog()
     # }
 # }
