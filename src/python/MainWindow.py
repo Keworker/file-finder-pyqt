@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):  # {
     def __getPathDialog(self) -> str:  # {
         return QFileDialog.getExistingDirectory(self, SELECT_DIRECTORY)
     # }
-    
+
     def __getFilenameEditor(self, context: QLayout) -> Iterable[QObject]:  # {
         self.__filenameEditor: QLineEdit = QLineEdit()
         self.__filenameEditor.setPlaceholderText(HINT_EDIT_FILENAME)
