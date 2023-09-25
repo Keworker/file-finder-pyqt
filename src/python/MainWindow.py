@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
     QRadioButton, QTextEdit, QCheckBox, QButtonGroup, \
-    QPushButton, QFileDialog, QListWidget, QListWidgetItem
+    QPushButton, QFileDialog, QListWidget, QListWidgetItem, QSizePolicy
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.File import File
@@ -87,6 +87,8 @@ class MainWindow(QScrollArea):  # {
 
     def __getContentEditor(self, context: QLayout) -> Iterable[QObject]:  # {
         self.__fileContentEditor: QTextEdit = QTextEdit()
+        policy: QSizePolicy = self.__fileContentEditor.sizePolicy()
+        policy.setVerticalPolicy(QSizePolicy.Policy.Preferred)
         self.__fileContentEditor.setPlaceholderText(HINT_EDIT_FILE_CONTENT)
         self.__useContentCheckbox: QCheckBox = QCheckBox(USE_CONTENT)
         # noinspection PyUnresolvedReferences
@@ -116,6 +118,8 @@ class MainWindow(QScrollArea):  # {
 
     def __getSearchResultsList(self) -> QWidget:  # {
         self.__resultsList: QListWidget = QListWidget()
+        policy: QSizePolicy = self.__resultsList.sizePolicy()
+        policy.setVerticalPolicy(QSizePolicy.Policy.Preferred)
         return self.__resultsList
     # }
 
