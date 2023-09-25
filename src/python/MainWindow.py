@@ -2,7 +2,8 @@ from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
-    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton, QFileDialog, QListWidget, QListWidgetItem
+    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, \
+    QPushButton, QFileDialog, QListWidget, QListWidgetItem
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.File import File
@@ -118,6 +119,7 @@ class MainWindow(QScrollArea):  # {
         return self.__resultsList
     # }
 
+    # pylint: disable=unused-private-member
     def __addFileToList(self, file: File) -> Unit:  # {
         listItem: QListWidgetItem = QListWidgetItem(self.__resultsList)
         customItem: FileSearchResultItem = FileSearchResultItem(file)
