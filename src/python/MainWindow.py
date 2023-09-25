@@ -3,11 +3,12 @@ from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
     QRadioButton, QTextEdit, QCheckBox, QButtonGroup, \
-    QPushButton, QFileDialog, QListWidget, QListWidgetItem, QSizePolicy
+    QPushButton, QFileDialog, QListWidgetItem, QSizePolicy
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.File import File
 from src.python.FileSearchReseultItem import FileSearchResultItem
+from src.python.ListViewNoScroll import ListViewNoScroll
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
@@ -88,7 +89,7 @@ class MainWindow(QScrollArea):  # {
     def __getContentEditor(self, context: QLayout) -> Iterable[QObject]:  # {
         self.__fileContentEditor: QTextEdit = QTextEdit()
         policy: QSizePolicy = self.__fileContentEditor.sizePolicy()
-        policy.setVerticalPolicy(QSizePolicy.Policy.Preferred)
+        policy.setVerticalPolicy(QSizePolicy.Policy.Fixed)
         self.__fileContentEditor.setPlaceholderText(HINT_EDIT_FILE_CONTENT)
         self.__useContentCheckbox: QCheckBox = QCheckBox(USE_CONTENT)
         # noinspection PyUnresolvedReferences
@@ -117,9 +118,9 @@ class MainWindow(QScrollArea):  # {
     # }
 
     def __getSearchResultsList(self) -> QWidget:  # {
-        self.__resultsList: QListWidget = QListWidget()
+        self.__resultsList: ListViewNoScroll = ListViewNoScroll()
         policy: QSizePolicy = self.__resultsList.sizePolicy()
-        policy.setVerticalPolicy(QSizePolicy.Policy.Preferred)
+        policy.setVerticalPolicy(QSizePolicy.Policy.Maximum)
         return self.__resultsList
     # }
 
@@ -130,6 +131,7 @@ class MainWindow(QScrollArea):  # {
         listItem.setSizeHint(customItem.sizeHint())
         self.__resultsList.addItem(listItem)
         self.__resultsList.setItemWidget(listItem, customItem)
+        self.__resultsList.setFixedHeight(self.__resultsList.sizeHint().height())
     # }
 
     def __onCheckboxStateChanged(self, state: bool) -> Unit:  # {
