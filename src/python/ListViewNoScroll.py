@@ -4,6 +4,12 @@ from PyQt6.QtCore import QSize
 
 
 class ListViewNoScroll(QListWidget):  # {
+    """
+    Subclass of PyQt6.QtWidgets.QListWidget.
+    It gives you opportunity to create list view without scrollbar (all elements are on screen).
+    This class can be useful if you use QListWidget in scrollable area.
+    """
+
     def __init__(self):  # {
         super().__init__()
         policy: QSizePolicy = self.sizePolicy()
@@ -15,7 +21,18 @@ class ListViewNoScroll(QListWidget):  # {
     # }
 
     # @Override
-    def setItemWidget(self, item: Optional[QListWidgetItem], widget: Optional[QWidget]) -> Unit:  # {
+    def setItemWidget(
+            self,
+            item: Optional[QListWidgetItem],
+            widget: Optional[QWidget]
+    ) -> Unit:  # {
+        """
+        Sets the widget to be displayed in the given item.
+
+        :param item: QListWidgetItem
+        :param widget: QWidget
+        :return: Unit (Void (NoReturn))
+        """
         super().setItemWidget(item, widget)
         if (widget.height() > self.__maxElemHeight):  # {
             self.__maxElemHeight = widget.height()
@@ -24,6 +41,11 @@ class ListViewNoScroll(QListWidget):  # {
 
     # @Override
     def sizeHint(self) -> QSize:  # {
+        """
+        This property holds the recommended size for the widget.
+
+        :return: Unit (Void (NoReturn))
+        """
         width: int = self.contentsRect().width()
         spacing: int = self.spacing() + 1
         elemHeight: int = self.__maxElemHeight
