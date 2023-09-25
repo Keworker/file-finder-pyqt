@@ -1,27 +1,27 @@
 from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, \
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
-    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton, QFileDialog
+    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton, QFileDialog, QListWidget, QListWidgetItem
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
+from src.python.File import File
+from src.python.FileSearchReseultItem import FileSearchResultItem
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
 
 
-class MainWindow(QMainWindow):  # {
+class MainWindow(QScrollArea):  # {
     def __init__(self, iconSmallPath: str, iconLargePath: str):  # {
         super().__init__()
         self.__initWidgets(iconSmallPath, iconLargePath)
     # }
 
     def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
-        scroll: QScrollArea = QScrollArea()
-        self.scroll: QScrollArea = scroll
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll.setWidgetResizable(1)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setWidgetResizable(True)
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout(self.widget)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -29,8 +29,8 @@ class MainWindow(QMainWindow):  # {
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
         root.addWidget(self.__getSearchButton())
-        scroll.setWidget(self.widget)
-        self.setCentralWidget(self.scroll)
+        root.addWidget(self.__getSearchResultsList())
+        self.setWidget(self.widget)
         self.setWindowTitle(APP_TITLE)
         self.setWindowIcon(QIcon(iconSmallPath))
         self.showMaximized()
@@ -111,6 +111,19 @@ class MainWindow(QMainWindow):  # {
         # noinspection PyUnresolvedReferences
         self.__searchButton.clicked.connect(self.__onSearchPressed)
         return self.__searchButton
+    # }
+
+    def __getSearchResultsList(self) -> QWidget:  # {
+        self.__resultsList: QListWidget = QListWidget()
+        return self.__resultsList
+    # }
+
+    def __addFileToList(self, file: File) -> Unit:  # {
+        listItem: QListWidgetItem = QListWidgetItem(self.__resultsList)
+        customItem: FileSearchResultItem = FileSearchResultItem(file)
+        listItem.setSizeHint(customItem.sizeHint())
+        self.__resultsList.addItem(listItem)
+        self.__resultsList.setItemWidget(listItem, customItem)
     # }
 
     def __onCheckboxStateChanged(self, state: bool) -> Unit:  # {
