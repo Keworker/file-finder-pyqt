@@ -32,10 +32,10 @@ class FileSearchResultItem(QWidget):  # {
             OS.startfile(self.__file.path)
         # }
         elif (Platform.system() == "Darwin"):  # {
-            Subprocess.run(["open", self.__file.path])
+            Subprocess.run(["open", self.__file.path], check=False)
         # }
         else:  # {
-            Subprocess.run(["xdg-open", self.__file.path])
+            Subprocess.run(["xdg-open", self.__file.path], check=False)
         # }
     # }
 # }
