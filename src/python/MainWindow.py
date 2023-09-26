@@ -1,27 +1,29 @@
 from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, \
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
-    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, QPushButton
+    QRadioButton, QTextEdit, QCheckBox, QButtonGroup, \
+    QPushButton, QFileDialog, QListWidgetItem, QSizePolicy
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
+from src.python.File import File
+from src.python.FileSearchReseultItem import FileSearchResultItem
+from src.python.ListViewNoScroll import ListViewNoScroll
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
-    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES
+    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
 
 
-class MainWindow(QMainWindow):  # {
+class MainWindow(QScrollArea):  # {
     def __init__(self, iconSmallPath: str, iconLargePath: str):  # {
         super().__init__()
         self.__initWidgets(iconSmallPath, iconLargePath)
     # }
 
     def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
-        scroll: QScrollArea = QScrollArea()
-        self.scroll: QScrollArea = scroll
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll.setWidgetResizable(1)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setWidgetResizable(True)
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout(self.widget)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -29,8 +31,8 @@ class MainWindow(QMainWindow):  # {
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
         root.addWidget(self.__getSearchButton())
-        scroll.setWidget(self.widget)
-        self.setCentralWidget(self.scroll)
+        root.addWidget(self.__getSearchResultsList())
+        self.setWidget(self.widget)
         self.setWindowTitle(APP_TITLE)
         self.setWindowIcon(QIcon(iconSmallPath))
         self.showMaximized()
@@ -65,6 +67,10 @@ class MainWindow(QMainWindow):  # {
         return titleContainer
     # }
 
+    def __getPathDialog(self) -> str:  # {
+        return QFileDialog.getExistingDirectory(self, SELECT_DIRECTORY)
+    # }
+
     def __getFilenameEditor(self, context: QLayout) -> Iterable[QObject]:  # {
         self.__filenameEditor: QLineEdit = QLineEdit()
         self.__filenameEditor.setPlaceholderText(HINT_EDIT_FILENAME)
@@ -82,6 +88,8 @@ class MainWindow(QMainWindow):  # {
 
     def __getContentEditor(self, context: QLayout) -> Iterable[QObject]:  # {
         self.__fileContentEditor: QTextEdit = QTextEdit()
+        policy: QSizePolicy = self.__fileContentEditor.sizePolicy()
+        policy.setVerticalPolicy(QSizePolicy.Policy.Fixed)
         self.__fileContentEditor.setPlaceholderText(HINT_EDIT_FILE_CONTENT)
         self.__useContentCheckbox: QCheckBox = QCheckBox(USE_CONTENT)
         # noinspection PyUnresolvedReferences
@@ -109,6 +117,23 @@ class MainWindow(QMainWindow):  # {
         return self.__searchButton
     # }
 
+    def __getSearchResultsList(self) -> QWidget:  # {
+        self.__resultsList: ListViewNoScroll = ListViewNoScroll()
+        policy: QSizePolicy = self.__resultsList.sizePolicy()
+        policy.setVerticalPolicy(QSizePolicy.Policy.Maximum)
+        return self.__resultsList
+    # }
+
+    # pylint: disable=unused-private-member
+    def __addFileToList(self, file: File) -> Unit:  # {
+        listItem: QListWidgetItem = QListWidgetItem(self.__resultsList)
+        customItem: FileSearchResultItem = FileSearchResultItem(file)
+        listItem.setSizeHint(customItem.sizeHint())
+        self.__resultsList.addItem(listItem)
+        self.__resultsList.setItemWidget(listItem, customItem)
+        self.__resultsList.setFixedHeight(self.__resultsList.sizeHint().height())
+    # }
+
     def __onCheckboxStateChanged(self, state: bool) -> Unit:  # {
         self.__fileContentEditor.setReadOnly(not state)
         self.__defaultRadio.setVisible(state)
@@ -118,6 +143,6 @@ class MainWindow(QMainWindow):  # {
     # }
 
     def __onSearchPressed(self) -> Unit:  # {
-        pass
+        self.__getPathDialog()
     # }
 # }
