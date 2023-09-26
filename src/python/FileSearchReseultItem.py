@@ -1,7 +1,7 @@
 import os as OS
 import platform as Platform
 import subprocess as Subprocess
-from typing import Any as Unit
+from typing import NoReturn as Unit
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
 from src.python.File import File
