@@ -1,6 +1,7 @@
 import os as OS
 import platform as Platform
 import subprocess as Subprocess
+from copy import copy
 from typing import NoReturn as Unit
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
@@ -27,15 +28,28 @@ class FileSearchResultItem(QWidget):  # {
         root.addWidget(goToFile)
     # }
 
+    def getFile(self) -> File:  # {
+        """
+        Get copy of this item's file result.
+        :return: File
+        """
+        return copy(self.__file)
+    # }
+
+    def __lt__(self, other):  # {
+        return self.getFile() < other.getFile()
+    # }
+
     def __onPressed(self) -> Unit:  # {
+        path: str = OS.path.dirname(self.__file.path)
         if (Platform.system() == "Windows"):  # {
-            OS.startfile(self.__file.path)
+            OS.startfile(path)
         # }
         elif (Platform.system() == "Darwin"):  # {
-            Subprocess.run(["open", self.__file.path], check=False)
+            Subprocess.run(["open", path], check=False)
         # }
         else:  # {
-            Subprocess.run(["xdg-open", self.__file.path], check=False)
+            Subprocess.run(["xdg-open", path], check=False)
         # }
     # }
 # }

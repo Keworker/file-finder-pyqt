@@ -1,3 +1,4 @@
+import logging
 from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
@@ -9,6 +10,7 @@ from PyQt6.QtGui import QIcon, QPixmap, QFont
 from src.python.File import File
 from src.python.FileSearchReseultItem import FileSearchResultItem
 from src.python.ListViewNoScroll import ListViewNoScroll
+from src.python.data.file_searcher import searchFile
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
@@ -119,6 +121,7 @@ class MainWindow(QScrollArea):  # {
 
     def __getSearchResultsList(self) -> QWidget:  # {
         self.__resultsList: ListViewNoScroll = ListViewNoScroll()
+        self.__resultsList.setSortingEnabled(True)
         policy: QSizePolicy = self.__resultsList.sizePolicy()
         policy.setVerticalPolicy(QSizePolicy.Policy.Maximum)
         return self.__resultsList
@@ -143,6 +146,27 @@ class MainWindow(QScrollArea):  # {
     # }
 
     def __onSearchPressed(self) -> Unit:  # {
-        self.__getPathDialog()
+        path: str = self.__getPathDialog()
+        filename: str = self.__filenameEditor.text()
+        searchByExt: bool = self.__extensionRadio.isChecked()
+        useRegExFilename: bool = self.__regExRadio.isChecked()
+        content: str = None
+        fullMatch: bool = False
+        ignoreWhitespace: bool = False
+        useRegExContent: bool = False
+        if (self.__useContentCheckbox.checkState()):  # {
+            content = self.__fileContentEditor.toPlainText()
+            fullMatch = self.__defaultRadio.isChecked()
+            ignoreWhitespace = self.__ignoreWhitespaceRadio.isChecked()
+            useRegExContent = self.__regExContentRadio.isChecked()
+        # }
+        if (path):  # {
+            self.__resultsList.clear()
+            searchFile(
+                path, filename, searchByExt, useRegExFilename,
+                content, fullMatch, ignoreWhitespace, useRegExContent,
+                self.__addFileToList
+            )
+        # }
     # }
 # }
