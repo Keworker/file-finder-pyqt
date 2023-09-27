@@ -1,4 +1,3 @@
-import logging
 from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
@@ -8,7 +7,9 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.File import File
+from src.python.FileContentMode import FileContentMode
 from src.python.FileSearchReseultItem import FileSearchResultItem
+from src.python.FilenameMode import FilenameMode
 from src.python.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
@@ -148,25 +149,30 @@ class MainWindow(QScrollArea):  # {
     def __onSearchPressed(self) -> Unit:  # {
         path: str = self.__getPathDialog()
         filename: str = self.__filenameEditor.text()
-        searchByExt: bool = self.__extensionRadio.isChecked()
-        useRegExFilename: bool = self.__regExRadio.isChecked()
+        filenameMode: FilenameMode = None
+        if (self.__extensionRadio.isChecked()):  # {
+            searchByExt = FilenameMode.EXTENSION
+        # }
+        if (self.__regExRadio.isChecked()):  # {
+            searchByExt = FilenameMode.REGEX
+        # }
         content: str = None
-        fullMatch: bool = False
-        ignoreWhitespace: bool = False
-        useRegExContent: bool = False
+        fileContentMode: FileContentMode = None
         if (self.__useContentCheckbox.checkState()):  # {
             content = self.__fileContentEditor.toPlainText()
-            fullMatch = self.__defaultRadio.isChecked()
-            ignoreWhitespace = self.__ignoreWhitespaceRadio.isChecked()
-            useRegExContent = self.__regExContentRadio.isChecked()
+            if (self.__defaultRadio.isChecked()):  # {
+                fileContentMode = FileContentMode.PLAIN
+            # }
+            if (self.__ignoreWhitespaceRadio.isChecked()):  # {
+                fileContentMode = FileContentMode.IGNORE_WHITESPACE
+            # }
+            if (self.__regExContentRadio.isChecked()):  # {
+                fileContentMode = FileContentMode.REGEX
+            # }
         # }
         if (path):  # {
             self.__resultsList.clear()
-            searchFile(
-                path, filename, searchByExt, useRegExFilename,
-                content, fullMatch, ignoreWhitespace, useRegExContent,
-                self.__addFileToList
-            )
+            searchFile(path, filename, filenameMode, content, fileContentMode, self.__addFileToList)
         # }
     # }
 # }
