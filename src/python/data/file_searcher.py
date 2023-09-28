@@ -54,12 +54,44 @@ def searchLocally(
                 # }
             # }
             matchCount: int = 0
-            if (content is not None):  # {
-                pass
+            if (content):  # {
+                try:  # {
+                    with open(curPath, "r", encoding="UTF-8") as f:  # {
+                        text: str = f.read()
+                        match fileContentMode:  # {
+                            case FileContentMode.PLAIN:  # {
+                                if not (content in text):  # {
+                                    continue
+                                # }
+                                matchCount = text.count(content)
+                            # }
+                            case FileContentMode.IGNORE_WHITESPACE:  # {
+                                text = RegEx.sub("\\s", "", text)
+                                curContent: str = RegEx.sub("\\s", "", text)
+                                if not (curContent in text):  # {
+                                    continue
+                                # }
+                                matchCount = text.count(curContent)
+                            # }
+                            case FileContentMode.REGEX:  # {
+                                if not (RegEx.match(content, text)):  # {
+                                    continue
+                                # }
+                                matchCount = len(RegEx.findall(content, text))
+                            # }
+                        # }
+                    # }
+                # }
+                except (UnicodeError, PermissionError):  # {
+                    pass
+                # }
+                except FileNotFoundError:  # {
+                    continue
+                # }
             # }
             try:  # {
                 with open(curPath, "r", encoding="UTF-8") as f:  # {
-                    callback(File(curPath, matchCount, f.read(SYMBOLS_FOR_PREVIEW)))
+                    callback(File(curPath, matchCount, f.read(SYMBOLS_FOR_PREVIEW).strip() + "..."))
                 # }
             # }
             except (UnicodeError, PermissionError):  # {

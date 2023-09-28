@@ -3,7 +3,7 @@ import platform as Platform
 import subprocess as Subprocess
 from copy import copy
 from typing import NoReturn as Unit
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QSizePolicy
 
 from src.python.File import File
 from src.res.strings import VIEW_IN_EXPLORER, CANT_LOAD_PREVIEW
@@ -17,6 +17,7 @@ class FileSearchResultItem(QWidget):  # {
         name: QLabel = QLabel(file.path)
         hBox: QHBoxLayout = QHBoxLayout()
         count: QLabel = QLabel(str(file.matchCount))
+        count.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         content: QLabel = QLabel()
         if (file.preview):  # {
             content.setText(file.preview)
