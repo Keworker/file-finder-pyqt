@@ -52,6 +52,7 @@ def isFileMatches(path: str, fileContentMode: FileContentMode, content: str) -> 
     except FileNotFoundError:  # {
         pass
     # }
+    return None
 # }
 
 
