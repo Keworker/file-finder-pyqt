@@ -14,29 +14,34 @@ SYMBOLS_FOR_PREVIEW: int = 75
 
 
 def isFileMatches(path: str, fileContentMode: FileContentMode, content: str) -> int:  # {
+    """
+    Function for check if file matches conditions
+
+    :param path: Path to file under check
+    :param fileContentMode: Mode of check
+    :param content: Content for matching
+    :return: Count of matches if file is suitable, else null
+    """
     try:  # {
         with open(path, "r", encoding="UTF-8") as f:  # {
             text: str = f.read()
             match fileContentMode:  # {
                 case FileContentMode.PLAIN:  # {
-                    if not (content in text):  # {
-                        return None
+                    if (content in text):  # {
+                        return text.count(content)
                     # }
-                    return text.count(content)
                 # }
                 case FileContentMode.IGNORE_WHITESPACE:  # {
                     text = RegEx.sub("\\s", "", text)
                     curContent: str = RegEx.sub("\\s", "", text)
-                    if not (curContent in text):  # {
-                        return None
+                    if (curContent in text):  # {
+                        return text.count(curContent)
                     # }
-                    return text.count(curContent)
                 # }
                 case FileContentMode.REGEX:  # {
-                    if not (RegEx.match(content, text)):  # {
-                        return None
+                    if (RegEx.match(content, text)):  # {
+                        return len(RegEx.findall(content, text))
                     # }
-                    return len(RegEx.findall(content, text))
                 # }
             # }
         # }
@@ -45,7 +50,7 @@ def isFileMatches(path: str, fileContentMode: FileContentMode, content: str) -> 
         return 0
     # }
     except FileNotFoundError:  # {
-        return None
+        pass
     # }
 # }
 
