@@ -13,6 +13,43 @@ UNIVERSAL_EXTENSION: str = ".*"
 SYMBOLS_FOR_PREVIEW: int = 75
 
 
+def isFileMatches(path: str, fileContentMode: FileContentMode, content: str) -> int:  # {
+    try:  # {
+        with open(path, "r", encoding="UTF-8") as f:  # {
+            text: str = f.read()
+            match fileContentMode:  # {
+                case FileContentMode.PLAIN:  # {
+                    if not (content in text):  # {
+                        return None
+                    # }
+                    return text.count(content)
+                # }
+                case FileContentMode.IGNORE_WHITESPACE:  # {
+                    text = RegEx.sub("\\s", "", text)
+                    curContent: str = RegEx.sub("\\s", "", text)
+                    if not (curContent in text):  # {
+                        return None
+                    # }
+                    return text.count(curContent)
+                # }
+                case FileContentMode.REGEX:  # {
+                    if not (RegEx.match(content, text)):  # {
+                        return None
+                    # }
+                    return len(RegEx.findall(content, text))
+                # }
+            # }
+        # }
+    # }
+    except (UnicodeError, PermissionError):  # {
+        return 0
+    # }
+    except FileNotFoundError:  # {
+        return None
+    # }
+# }
+
+
 def searchLocally(
         path: str, filename: str, filenameMode: FilenameMode,
         content: str, fileContentMode: FileContentMode,
@@ -55,39 +92,11 @@ def searchLocally(
             # }
             matchCount: int = 0
             if (content):  # {
-                try:  # {
-                    with open(curPath, "r", encoding="UTF-8") as f:  # {
-                        text: str = f.read()
-                        match fileContentMode:  # {
-                            case FileContentMode.PLAIN:  # {
-                                if not (content in text):  # {
-                                    continue
-                                # }
-                                matchCount = text.count(content)
-                            # }
-                            case FileContentMode.IGNORE_WHITESPACE:  # {
-                                text = RegEx.sub("\\s", "", text)
-                                curContent: str = RegEx.sub("\\s", "", text)
-                                if not (curContent in text):  # {
-                                    continue
-                                # }
-                                matchCount = text.count(curContent)
-                            # }
-                            case FileContentMode.REGEX:  # {
-                                if not (RegEx.match(content, text)):  # {
-                                    continue
-                                # }
-                                matchCount = len(RegEx.findall(content, text))
-                            # }
-                        # }
-                    # }
-                # }
-                except (UnicodeError, PermissionError):  # {
-                    pass
-                # }
-                except FileNotFoundError:  # {
+                temp = isFileMatches(curPath, fileContentMode, content)
+                if (temp is None):  # {
                     continue
                 # }
+                matchCount = temp
             # }
             try:  # {
                 with open(curPath, "r", encoding="UTF-8") as f:  # {
