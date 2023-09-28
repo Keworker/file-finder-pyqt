@@ -6,7 +6,7 @@ from typing import NoReturn as Unit
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
 from src.python.File import File
-from src.res.strings import VIEW_IN_EXPLORER
+from src.res.strings import VIEW_IN_EXPLORER, CANT_LOAD_PREVIEW
 
 
 class FileSearchResultItem(QWidget):  # {
@@ -17,7 +17,13 @@ class FileSearchResultItem(QWidget):  # {
         name: QLabel = QLabel(file.path)
         hBox: QHBoxLayout = QHBoxLayout()
         count: QLabel = QLabel(str(file.matchCount))
-        content: QLabel = QLabel(file.preview)
+        content: QLabel = QLabel()
+        if (file.preview):  # {
+            content.setText(file.preview)
+        # }
+        else:  # {
+            content.setText(CANT_LOAD_PREVIEW)
+        # }
         hBox.addWidget(count)
         hBox.addWidget(content)
         goToFile: QPushButton = QPushButton(VIEW_IN_EXPLORER)

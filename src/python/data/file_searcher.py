@@ -32,7 +32,7 @@ def searchLocally(
     """
     extensions: list[str] = None
     if (filenameMode == FilenameMode.EXTENSION):  # {
-        extensions: list[str] = filename.split(";")
+        extensions: list[str] = [it.lstrip(".") for it in filename.split(";") if it]
         if (UNIVERSAL_EXTENSION in extensions):  # {
             extensions = [UNIVERSAL_EXTENSION]
         # }
@@ -42,7 +42,7 @@ def searchLocally(
         if (isFile(curPath)):  # {
             match filenameMode:  # {
                 case FilenameMode.EXTENSION:  # {
-                    extension: str = "." + file.split(".")[-1] if "." in file else ""
+                    extension: str = file.split(".")[-1] if "." in file else ""
                     if not (extension in extensions or UNIVERSAL_EXTENSION in extensions):  # {
                         continue
                     # }
@@ -57,8 +57,16 @@ def searchLocally(
             if (content is not None):  # {
                 pass
             # }
-            with open(curPath, "r") as f:  # {
-                callback(File(curPath, matchCount, ""))
+            try:  # {
+                with open(curPath, "r", encoding="UTF-8") as f:  # {
+                    callback(File(curPath, matchCount, f.read(SYMBOLS_FOR_PREVIEW)))
+                # }
+            # }
+            except (UnicodeError, PermissionError):  # {
+                callback(File(curPath, matchCount, None))
+            # }
+            except FileNotFoundError:  # {
+                pass
             # }
         # }
         else:  # {

@@ -15,3 +15,4 @@ HINT_EDIT_FILE_CONTENT: str = """signed main(void) {
 SEARCH_FOR_FILES: str = "Start search"
 SELECT_DIRECTORY: str = "Select directory for search"
 VIEW_IN_EXPLORER: str = "View in file explorer"
+CANT_LOAD_PREVIEW: str = "Error while loading preview, sorry..."

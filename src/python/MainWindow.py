@@ -149,12 +149,12 @@ class MainWindow(QScrollArea):  # {
     def __onSearchPressed(self) -> Unit:  # {
         path: str = self.__getPathDialog()
         filename: str = self.__filenameEditor.text()
-        filenameMode: FilenameMode = None
+        filenameMode: FilenameMode
         if (self.__extensionRadio.isChecked()):  # {
-            searchByExt = FilenameMode.EXTENSION
+            filenameMode = FilenameMode.EXTENSION
         # }
         if (self.__regExRadio.isChecked()):  # {
-            searchByExt = FilenameMode.REGEX
+            filenameMode = FilenameMode.REGEX
         # }
         content: str = None
         fileContentMode: FileContentMode = None
