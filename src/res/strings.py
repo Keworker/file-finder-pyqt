@@ -26,4 +26,5 @@ You can send bug report, read our licence or explore source code with our GitHub
 REPO_LINK: str = """
 - <a href=https://github.com/Keworker/file-finder-pyqt>https://github.com/Keworker/file-finder-pyqt</a>
 """.strip()
-CONTACTS: str = 'If you have personal questions: <a href="mailto:kew0rker11@gmail.com">kew0rker11@gmail.com</a>'
+CONTACTS: str = ('If you have personal questions: '
+                 '<a href="mailto:kew0rker11@gmail.com">kew0rker11@gmail.com</a>')
