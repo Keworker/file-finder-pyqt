@@ -5,7 +5,7 @@ from copy import copy
 from typing import NoReturn as Unit
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QSizePolicy
 
-from src.python.File import File
+from src.python.data.File import File
 from src.res.strings import VIEW_IN_EXPLORER, CANT_LOAD_PREVIEW
 
 

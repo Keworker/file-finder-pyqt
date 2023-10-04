@@ -6,10 +6,12 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPushButton, QFileDialog, QListWidgetItem, QSizePolicy
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
-from src.python.File import File
-from src.python.FileContentMode import FileContentMode
+from src.python.AboutWindow import AboutWindow
+from src.python.data.File import File
+from src.python.data.FileContentMode import FileContentMode
+from src.python.view.ClickableLabel import ClickableLabel
 from src.python.view.FileSearchResultItem import FileSearchResultItem
-from src.python.FilenameMode import FilenameMode
+from src.python.data.FilenameMode import FilenameMode
 from src.python.view.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
 from src.python.view.SortableListWidgetItem import SortableListWidgetItem
@@ -19,8 +21,9 @@ from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
 
 
 class MainWindow(QScrollArea):  # {
-    def __init__(self, iconSmallPath: str, iconLargePath: str):  # {
+    def __init__(self, application, iconSmallPath: str, iconLargePath: str):  # {
         super().__init__()
+        self.application = application
         self.__initWidgets(iconSmallPath, iconLargePath)
     # }
 
@@ -31,7 +34,7 @@ class MainWindow(QScrollArea):  # {
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout(self.widget)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
-        root.addLayout(self.__getTitleLayout(APP_TITLE, iconLargePath))
+        root.addLayout(self.__getTitleLayout(APP_TITLE, iconSmallPath, iconLargePath))
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
         root.addWidget(self.__getSearchButton())
@@ -55,16 +58,19 @@ class MainWindow(QScrollArea):  # {
         # }
     # }
 
-    @staticmethod
-    def __getTitleLayout(title: str, iconLargePath: str) -> QLayout:  # {
+    def __getTitleLayout(self, title: str, iconSmallPath: str, iconLargePath: str) -> QLayout:  # {
         titleContainer: QHBoxLayout = QHBoxLayout()
         title: QLabel = QLabel(title)
         font: QFont = title.font()
         font.setBold(1)
         title.setFont(font)
         title.setMaximumHeight(title.fontMetrics().height() * 4)
-        icon: QLabel = QLabel()
-        icon.setPixmap(QPixmap(iconLargePath).scaledToHeight(title.height()))
+        icon: ClickableLabel = ClickableLabel()
+        pixmap: QPixmap = QPixmap(iconLargePath)
+        icon.setPixmap(pixmap.scaledToHeight(title.height()))
+        icon.setOnClickListener(
+            lambda: AboutWindow(self.application, QIcon(iconSmallPath), pixmap)
+        )
         titleContainer.setAlignment(Qt.AlignmentFlag.AlignLeft)
         titleContainer.addWidget(icon)
         titleContainer.addWidget(title)

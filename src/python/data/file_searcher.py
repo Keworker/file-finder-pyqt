@@ -5,9 +5,9 @@ from os import listdir as listDir
 from os.path import isfile as isFile, join
 import re as RegEx
 
-from src.python.File import File
-from src.python.FileContentMode import FileContentMode
-from src.python.FilenameMode import FilenameMode
+from src.python.data.File import File
+from src.python.data.FileContentMode import FileContentMode
+from src.python.data.FilenameMode import FilenameMode
 
 UNIVERSAL_EXTENSION: str = ".*"
 SYMBOLS_FOR_PREVIEW: int = 75
