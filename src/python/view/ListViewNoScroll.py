@@ -2,7 +2,7 @@ from typing import NoReturn as Unit, Optional
 from PyQt6.QtWidgets import QSizePolicy, QListWidgetItem, QListWidget, QWidget, QAbstractItemView
 from PyQt6.QtCore import QSize
 
-from src.python.FileSearchReseultItem import FileSearchResultItem
+from src.python.view.FileSearchResultItem import FileSearchResultItem
 
 
 class ListViewNoScroll(QListWidget):  # {
@@ -38,6 +38,7 @@ class ListViewNoScroll(QListWidget):  # {
         if (isinstance(item.listWidget(), FileSearchResultItem)):  # {
             self.__sumElementsHeight -= item.listWidget().height()
         # }
+        item.widget = widget
         super().setItemWidget(item, widget)
         self.__sumElementsHeight += widget.height()
     # }

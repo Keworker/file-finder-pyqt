@@ -8,10 +8,11 @@ from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.File import File
 from src.python.FileContentMode import FileContentMode
-from src.python.FileSearchReseultItem import FileSearchResultItem
+from src.python.view.FileSearchResultItem import FileSearchResultItem
 from src.python.FilenameMode import FilenameMode
-from src.python.ListViewNoScroll import ListViewNoScroll
+from src.python.view.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
+from src.python.view.SortableListWidgetItem import SortableListWidgetItem
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
@@ -130,12 +131,13 @@ class MainWindow(QScrollArea):  # {
 
     # pylint: disable=unused-private-member
     def __addFileToList(self, file: File) -> Unit:  # {
-        listItem: QListWidgetItem = QListWidgetItem(self.__resultsList)
+        listItem: QListWidgetItem = SortableListWidgetItem(self.__resultsList)
         customItem: FileSearchResultItem = FileSearchResultItem(file)
         listItem.setSizeHint(customItem.sizeHint())
         self.__resultsList.addItem(listItem)
         self.__resultsList.setItemWidget(listItem, customItem)
         self.__resultsList.setFixedHeight(self.__resultsList.sizeHint().height())
+        self.__resultsList.sortItems()
     # }
 
     def __onCheckboxStateChanged(self, state: bool) -> Unit:  # {
@@ -146,6 +148,7 @@ class MainWindow(QScrollArea):  # {
         self.__fileContentEditor.setVisible(state)
     # }
 
+    # noinspection PyTypeChecker
     def __onSearchPressed(self) -> Unit:  # {
         path: str = self.__getPathDialog()
         filename: str = self.__filenameEditor.text()
