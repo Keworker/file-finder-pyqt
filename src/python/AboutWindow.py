@@ -29,7 +29,7 @@ class AboutWindow(QWidget):  # {
         self.setGeometry(shape)
         self.showNormal()
     # }
-    
+
     @staticmethod
     def __getIcon(iconLarge: QIcon) -> QWidget:  # {
         icon: QLabel = QLabel()
