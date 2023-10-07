@@ -1,8 +1,8 @@
 ```
-        __--==--__      
-      /.!???J5PY7A.\        
-     |:GBPGB#BBB#PO|      
-     |^75#5YYPGY?YD|      
+        __--==--__       
+      /.!???J5PY7A.\     
+     |:GBPGB#BBB#PO|     
+     |^75#5YYPGY?YD|     
       :JGP!BBB!JY5^      
       .^7YP@@@PY!^       
          .7G&BJ:         
@@ -19,9 +19,12 @@ PyQt program for finding text files by name or content.
 
 ### License
 
-This repo's content is under the Mozilla Public License 2.0. Permissions of this weak copyleft license are conditioned
-on making available source code of licensed files and modifications of those files under the same license (or in certain
-cases, one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant
-of patent rights. However, a larger work using the licensed work may be distributed under different terms and without
-source code for files added in the larger work. See
-the [LICENSE](https://github.com/Keworker/file-finder-pyqt/blob/master/LICENSE) for more information.
+The content of this repository is protected by the Mozilla Public License 2.0. 
+
+Permissions of this weak copyleft license 
+are conditioned on making available source code of licensed files and modifications of those files under the same license 
+(or in certain cases, one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide 
+an express grant of patent rights. However, a larger work using the licensed work may be distributed under different 
+terms and without source code for files added in the larger work. 
+
+See the [LICENSE](https://github.com/Keworker/file-finder-pyqt/blob/master/LICENSE) for more information.
