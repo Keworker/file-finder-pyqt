@@ -15,19 +15,23 @@ class AboutWindow(QWidget):  # {
         root: QHBoxLayout = QHBoxLayout(self)
         iconLarge = iconLarge.scaled(int(shape.height() * 0.85), int(shape.height() * 0.85))
         root.addWidget(self.__getIcon(iconLarge))
-        vBox: QVBoxLayout = QVBoxLayout()
-        vBox.setAlignment(Qt.AlignmentFlag.AlignTop)
-        vBox.addWidget(self.__getAppName())
-        vBox.addWidget(self.__getVersion())
-        vBox.addWidget(self.__getTextAbout(shape.width() - iconLarge.width()))
-        vBox.addWidget(self.__getLink(shape.width() - iconLarge.width()))
-        vBox.addWidget(self.__getContacts(shape.width() - iconLarge.width()))
-        root.addLayout(vBox)
+        root.addLayout(self.__vBoxGet(shape.width() - iconLarge.width()))
         self.setWindowTitle(ABOUT_TITLE)
         self.setWindowIcon(iconSmall)
         shape.moveCenter(screen.center())
         self.setGeometry(shape)
         self.showNormal()
+    # }
+
+    def __vBoxGet(self, width: int) -> QVBoxLayout:  # {
+        vBox: QVBoxLayout = QVBoxLayout()
+        vBox.setAlignment(Qt.AlignmentFlag.AlignTop)
+        vBox.addWidget(self.__getAppName())
+        vBox.addWidget(self.__getVersion())
+        vBox.addWidget(self.__getTextAbout(width))
+        vBox.addWidget(self.__getLink(width))
+        vBox.addWidget(self.__getContacts(width))
+        return vBox
     # }
 
     @staticmethod
