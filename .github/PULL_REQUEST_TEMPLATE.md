@@ -1,12 +1,12 @@
 # About Pull Request
 
-\# Wrote about your PR here
+\# Write about your PR here
 
 # Successful PR check-list
 
-- [ ] I've described what this PR does. 
-- [ ] PR is ready for merge and fully completed or I wrote, what will I do later in this PR and convert it to draft.
-- [ ] I've request review from project owner or from somebody of contributors. 
+- [ ] I explained what's changed. 
+- [ ] The PR is ready to merge and completely finished (or I've written out what I'm going to do next in this PR and moved it to draft). 
+- [ ] I've requested a review from the project owner or some of the contributors. 
 - [ ] I've read [contributing guide](https://github.com/Keworker/file-finder-pyqt/blob/master/CONTRIBUTING.md). 
-- [ ] I understand, that PR won't be reviewed until all checks have passed.
-- [ ] I understand, that I can't merge PR without a review. 
+- [ ] I understand that the PR will not get a review until all checks have been passed. 
+- [ ] I understand that I can't merge PR without a review.
