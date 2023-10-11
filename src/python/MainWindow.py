@@ -6,17 +6,24 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPushButton, QFileDialog, QListWidgetItem, QSizePolicy
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
-from src.python.File import File
-from src.python.FileSearchReseultItem import FileSearchResultItem
-from src.python.ListViewNoScroll import ListViewNoScroll
+from src.python.AboutWindow import AboutWindow
+from src.python.data.File import File
+from src.python.data.FileContentMode import FileContentMode
+from src.python.view.ClickableLabel import ClickableLabel
+from src.python.view.FileSearchResultItem import FileSearchResultItem
+from src.python.data.FilenameMode import FilenameMode
+from src.python.view.ListViewNoScroll import ListViewNoScroll
+from src.python.data.file_searcher import searchFile
+from src.python.view.SortableListWidgetItem import SortableListWidgetItem
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
 
 
 class MainWindow(QScrollArea):  # {
-    def __init__(self, iconSmallPath: str, iconLargePath: str):  # {
+    def __init__(self, application, iconSmallPath: str, iconLargePath: str):  # {
         super().__init__()
+        self.application = application
         self.__initWidgets(iconSmallPath, iconLargePath)
     # }
 
@@ -27,7 +34,7 @@ class MainWindow(QScrollArea):  # {
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout(self.widget)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
-        root.addLayout(self.__getTitleLayout(APP_TITLE, iconLargePath))
+        root.addLayout(self.__getTitleLayout(APP_TITLE, iconSmallPath, iconLargePath))
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
         root.addWidget(self.__getSearchButton())
@@ -51,16 +58,19 @@ class MainWindow(QScrollArea):  # {
         # }
     # }
 
-    @staticmethod
-    def __getTitleLayout(title: str, iconLargePath: str) -> QLayout:  # {
+    def __getTitleLayout(self, title: str, iconSmallPath: str, iconLargePath: str) -> QLayout:  # {
         titleContainer: QHBoxLayout = QHBoxLayout()
         title: QLabel = QLabel(title)
         font: QFont = title.font()
         font.setBold(1)
         title.setFont(font)
         title.setMaximumHeight(title.fontMetrics().height() * 4)
-        icon: QLabel = QLabel()
-        icon.setPixmap(QPixmap(iconLargePath).scaledToHeight(title.height()))
+        icon: ClickableLabel = ClickableLabel()
+        pixmap: QPixmap = QPixmap(iconLargePath)
+        icon.setPixmap(pixmap.scaledToHeight(title.height()))
+        icon.setOnClickListener(
+            lambda: AboutWindow(self.application, QIcon(iconSmallPath), pixmap)
+        )
         titleContainer.setAlignment(Qt.AlignmentFlag.AlignLeft)
         titleContainer.addWidget(icon)
         titleContainer.addWidget(title)
@@ -119,6 +129,7 @@ class MainWindow(QScrollArea):  # {
 
     def __getSearchResultsList(self) -> QWidget:  # {
         self.__resultsList: ListViewNoScroll = ListViewNoScroll()
+        self.__resultsList.setSortingEnabled(True)
         policy: QSizePolicy = self.__resultsList.sizePolicy()
         policy.setVerticalPolicy(QSizePolicy.Policy.Maximum)
         return self.__resultsList
@@ -126,12 +137,13 @@ class MainWindow(QScrollArea):  # {
 
     # pylint: disable=unused-private-member
     def __addFileToList(self, file: File) -> Unit:  # {
-        listItem: QListWidgetItem = QListWidgetItem(self.__resultsList)
+        listItem: QListWidgetItem = SortableListWidgetItem(self.__resultsList)
         customItem: FileSearchResultItem = FileSearchResultItem(file)
         listItem.setSizeHint(customItem.sizeHint())
         self.__resultsList.addItem(listItem)
         self.__resultsList.setItemWidget(listItem, customItem)
         self.__resultsList.setFixedHeight(self.__resultsList.sizeHint().height())
+        self.__resultsList.sortItems()
     # }
 
     def __onCheckboxStateChanged(self, state: bool) -> Unit:  # {
@@ -142,7 +154,34 @@ class MainWindow(QScrollArea):  # {
         self.__fileContentEditor.setVisible(state)
     # }
 
+    # noinspection PyTypeChecker
     def __onSearchPressed(self) -> Unit:  # {
-        self.__getPathDialog()
+        path: str = self.__getPathDialog()
+        filename: str = self.__filenameEditor.text()
+        filenameMode: FilenameMode
+        if (self.__extensionRadio.isChecked()):  # {
+            filenameMode = FilenameMode.EXTENSION
+        # }
+        if (self.__regExRadio.isChecked()):  # {
+            filenameMode = FilenameMode.REGEX
+        # }
+        content: str = None
+        fileContentMode: FileContentMode = None
+        if (self.__useContentCheckbox.checkState()):  # {
+            content = self.__fileContentEditor.toPlainText()
+            if (self.__defaultRadio.isChecked()):  # {
+                fileContentMode = FileContentMode.PLAIN
+            # }
+            if (self.__ignoreWhitespaceRadio.isChecked()):  # {
+                fileContentMode = FileContentMode.IGNORE_WHITESPACE
+            # }
+            if (self.__regExContentRadio.isChecked()):  # {
+                fileContentMode = FileContentMode.REGEX
+            # }
+        # }
+        if (path):  # {
+            self.__resultsList.clear()
+            searchFile(path, filename, filenameMode, content, fileContentMode, self.__addFileToList)
+        # }
     # }
 # }

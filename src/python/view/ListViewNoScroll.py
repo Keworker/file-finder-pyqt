@@ -2,6 +2,8 @@ from typing import NoReturn as Unit, Optional
 from PyQt6.QtWidgets import QSizePolicy, QListWidgetItem, QListWidget, QWidget, QAbstractItemView
 from PyQt6.QtCore import QSize
 
+from src.python.view.FileSearchResultItem import FileSearchResultItem
+
 
 class ListViewNoScroll(QListWidget):  # {
     """
@@ -15,7 +17,7 @@ class ListViewNoScroll(QListWidget):  # {
         policy: QSizePolicy = self.sizePolicy()
         policy.setVerticalPolicy(QSizePolicy.Policy.Fixed)
         self.setSizePolicy(policy)
-        self.__maxElemHeight: int = 0
+        self.__sumElementsHeight: int = 0
         self.verticalScrollBar().setStyleSheet("QScrollBar {width:0;}")
         self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
     # }
@@ -33,10 +35,12 @@ class ListViewNoScroll(QListWidget):  # {
         :param widget: QWidget
         :return: Unit (Void (NoReturn))
         """
-        super().setItemWidget(item, widget)
-        if (widget.height() > self.__maxElemHeight):  # {
-            self.__maxElemHeight = widget.height()
+        if (isinstance(item.listWidget(), FileSearchResultItem)):  # {
+            self.__sumElementsHeight -= item.listWidget().height()
         # }
+        item.widget = widget
+        super().setItemWidget(item, widget)
+        self.__sumElementsHeight += widget.height()
     # }
 
     # @Override
@@ -44,13 +48,23 @@ class ListViewNoScroll(QListWidget):  # {
         """
         This property holds the recommended size for the widget.
 
-        :return: Unit (Void (NoReturn))
+        :return: QSize
         """
         width: int = self.contentsRect().width()
         spacing: int = self.spacing() + 1
-        elemHeight: int = self.__maxElemHeight
+        elemHeight: int = self.__sumElementsHeight
         marginsHeight: int = self.contentsMargins().top() + self.contentsMargins().bottom()
         n: int = self.count()
-        return QSize(width, (spacing + elemHeight) * n + marginsHeight + 2 * n - spacing)
+        return QSize(width, elemHeight + spacing * n + marginsHeight + 2 * n - spacing)
+    # }
+
+    # @Override
+    def clear(self) -> Unit:  # {
+        """
+        Removes all items and selections in the view.
+        :return: Unit (Void (NoReturn))
+        """
+        super().clear()
+        self.__sumElementsHeight = 0
     # }
 # }
