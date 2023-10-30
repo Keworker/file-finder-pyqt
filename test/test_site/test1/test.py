@@ -9,10 +9,6 @@ from DebuggableExecutor import DebuggableExecutor
 
 
 def syncSearchCallback() -> Unit:  # {
-    """
-
-    :return:
-    """
     syncResults.append(Time.now())
 # }
 
