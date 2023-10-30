@@ -17,8 +17,8 @@ def searchSync(path: str, extension: str, content: str, callback: Callable) -> U
                             callback()
                         # }
                     # }
-                    except Exception as e:  # {
-                        print(e)
+                    except Exception:  # {
+                        pass
                     # }
                 # }
             # }
@@ -27,8 +27,8 @@ def searchSync(path: str, extension: str, content: str, callback: Callable) -> U
             try:  # {
                 searchSync(curPath, extension, content, callback)
             # }
-            except Exception as e:  # {
-                print(e)
+            except Exception:  # {
+                pass
             # }
         # }
     # }
