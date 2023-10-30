@@ -1,3 +1,4 @@
+# pylint: skip-file
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import NoReturn as Unit, Callable
 from os import listdir as listDir
@@ -22,7 +23,7 @@ def searchMultithread(
                     # }
                 # }
             # }
-            except Exception as e:  # {
+            except Exception:  # {
                 pass
             # }
         # }
@@ -30,7 +31,7 @@ def searchMultithread(
             try:  # {
                 pool.submit(searchMultithread, curPath, extension, content, callback, pool)
             # }
-            except Exception as e:  # {
+            except Exception:  # {
                 pass
             # }
         # }

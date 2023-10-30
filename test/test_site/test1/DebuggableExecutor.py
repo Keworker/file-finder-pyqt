@@ -1,3 +1,4 @@
+# pylint: skip-file
 from concurrent.futures import Future
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Callable

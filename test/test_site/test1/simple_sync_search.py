@@ -1,3 +1,4 @@
+# pylint: skip-file
 from typing import NoReturn as Unit, Callable
 from os import listdir as listDir
 from os.path import isfile as isFile, join

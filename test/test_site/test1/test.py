@@ -1,3 +1,4 @@
+# pylint: skip-file
 from datetime import datetime as Time
 from time import sleep
 from typing import NoReturn as Unit
@@ -8,6 +9,10 @@ from DebuggableExecutor import DebuggableExecutor
 
 
 def syncSearchCallback() -> Unit:  # {
+    """
+
+    :return:
+    """
     syncResults.append(Time.now())
 # }
 
@@ -17,7 +22,9 @@ def asyncSearchCallback() -> Unit:  # {
 # }
 
 
-path: str = input("Input a path of big directory, that contains a lot of .txt files with symbol 'a': ")
+path: str = input(
+    "Input a path of big directory, that contains a lot of .txt files with symbol 'a': "
+)
 
 syncResults: list[Time] = list()
 totalSyncTime: Time
