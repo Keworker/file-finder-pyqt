@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
     QRadioButton, QTextEdit, QCheckBox, QButtonGroup, \
-    QPushButton, QFileDialog, QListWidgetItem, QSizePolicy, QInputDialog
+    QPushButton, QFileDialog, QListWidgetItem, QSizePolicy, QInputDialog, QCompleter
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.AboutWindow import AboutWindow
@@ -136,6 +136,9 @@ class MainWindow(QScrollArea):  # {
         self.__logInGitHub.clicked.connect(self.__showGitHubLoginDialog)
         self.__accountForSearch: QLineEdit = QLineEdit()
         self.__accountForSearch.setPlaceholderText(ACCOUNT_FOR_SEARCHING)
+        completer: QCompleter = QCompleter(self.__dao.getOrganizations(), self)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.__accountForSearch.setCompleter(completer)
         self.__logInGitHub.setVisible(False)
         self.__accountForSearch.setVisible(False)
         return [self.__useGitHubCheckbox, self.__logInGitHub, self.__accountForSearch]
@@ -209,6 +212,15 @@ class MainWindow(QScrollArea):  # {
         if (self.__useGitHubCheckbox.isChecked()):  # {
             self.__extensionRadio.click()
             self.__ignoreWhitespaceRadio.click()
+            organization: str = self.__accountForSearch.text()
+            organizations: list[str] = self.__dao.getOrganizations()
+            if (organization not in organizations):  # {
+                self.__dao.addOrganization(organization)
+                organizations.append(organization)
+                completer: QCompleter = QCompleter(organizations, self)
+                completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+                self.__accountForSearch.setCompleter(completer)
+            # }
         # }
         path: str = self.__getPathDialog()
         filename: str = self.__filenameEditor.text()

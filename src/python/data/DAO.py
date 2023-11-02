@@ -23,9 +23,25 @@ class DAO:  # {
         cursor: Cursor = connection.cursor()
         query = list(cursor.execute("SELECT github_token FROM token LIMIT 1;"))
         DAO.__logTokenAccess(cursor)
-        connection.commit()
         connection.close()
         return query[0][0]
+    # }
+
+    def addOrganization(self, name: str) -> Unit:  # {
+        connection: Connection = SQLite.connect(self.__path)
+        cursor: Cursor = connection.cursor()
+        cursor.execute(f"INSERT OR IGNORE INTO organizations VALUES (NULL, \"{name}\");")
+        connection.commit()
+        connection.close()
+    # }
+
+    def getOrganizations(self) -> list[str]:  # {
+        connection: Connection = SQLite.connect(self.__path)
+        cursor: Cursor = connection.cursor()
+        query = cursor.execute("SELECT name FROM organizations;")
+        result: list[str] = [it[0] for it in query]
+        connection.close()
+        return result
     # }
 
     @staticmethod
@@ -37,22 +53,24 @@ class DAO:  # {
     def __ensureCreated(self) -> Unit:  # {
         connection: Connection = SQLite.connect(self.__path)
         cursor: Cursor = connection.cursor()
-        cursor.execute(
-            """
+        cursor.execute("""
 CREATE TABLE IF NOT EXISTS "token" (
     "id"	INTEGER UNIQUE,
     "github_token"	TEXT,
     PRIMARY KEY("id" AUTOINCREMENT)
-);
-""".strip())
-        cursor.execute(
-            """
+);""".strip())
+        cursor.execute("""
 CREATE TABLE IF NOT EXISTS "token_access" (
     "id"	INTEGER UNIQUE,
     "timestamp"	INTEGER,
     PRIMARY KEY("id" AUTOINCREMENT)
-);
-""".strip())
+);""".strip())
+        cursor.execute("""
+CREATE TABLE IF NOT EXISTS "organizations" (
+    "id"	INTEGER UNIQUE,
+    "name"	INTEGER,
+    PRIMARY KEY("id" AUTOINCREMENT)
+);""".strip())
         connection.commit()
         connection.close()
     # }
