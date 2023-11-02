@@ -209,6 +209,7 @@ class MainWindow(QScrollArea):  # {
 
     # noinspection PyTypeChecker
     def __onSearchPressed(self) -> Unit:  # {
+        self.__resultsList.clear()
         if (self.__useGitHubCheckbox.isChecked()):  # {
             self.__extensionRadio.click()
             self.__ignoreWhitespaceRadio.click()

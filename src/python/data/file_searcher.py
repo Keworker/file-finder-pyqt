@@ -38,7 +38,7 @@ def isFileMatches(path: str, fileContentMode: FileContentMode, content: str) -> 
                 # }
                 case FileContentMode.IGNORE_WHITESPACE:  # {
                     text = RegEx.sub("\\s", "", text)
-                    curContent: str = RegEx.sub("\\s", "", text)
+                    curContent: str = RegEx.sub("\\s", "", content)
                     if (curContent in text):  # {
                         return text.count(curContent)
                     # }
