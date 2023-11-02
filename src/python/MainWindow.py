@@ -9,15 +9,18 @@ from PyQt6.QtGui import QIcon, QPixmap, QFont
 from src.python.AboutWindow import AboutWindow
 from src.python.data.File import File
 from src.python.data.FileContentMode import FileContentMode
+from src.python.data.RemoteResult import RemoteResult
 from src.python.view.ClickableLabel import ClickableLabel
 from src.python.view.FileSearchResultItem import FileSearchResultItem
 from src.python.data.FilenameMode import FilenameMode
 from src.python.view.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
+from src.python.view.RemoteResultItem import RemoteResultItem
 from src.python.view.SortableListWidgetItem import SortableListWidgetItem
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
-    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY, USE_GITHUB, LOGIN_GITHUB, \
+    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, \
+    SELECT_DIRECTORY, USE_GITHUB, LOGIN_GITHUB, \
     ACCOUNT_FOR_SEARCHING, EDIT_TOKEN, YOUR_GITHUB_API_TOKEN
 
 
@@ -153,10 +156,19 @@ class MainWindow(QScrollArea):  # {
         return self.__resultsList
     # }
 
-    # pylint: disable=unused-private-member
     def __addFileToList(self, file: File) -> Unit:  # {
         listItem: QListWidgetItem = SortableListWidgetItem(self.__resultsList)
         customItem: FileSearchResultItem = FileSearchResultItem(file)
+        listItem.setSizeHint(customItem.sizeHint())
+        self.__resultsList.addItem(listItem)
+        self.__resultsList.setItemWidget(listItem, customItem)
+        self.__resultsList.setFixedHeight(self.__resultsList.sizeHint().height())
+        self.__resultsList.sortItems()
+    # }
+
+    def __addRemoteResultToList(self, file: RemoteResult) -> Unit:  # {
+        listItem: QListWidgetItem = SortableListWidgetItem(self.__resultsList)
+        customItem: RemoteResultItem = RemoteResultItem(file)
         listItem.setSizeHint(customItem.sizeHint())
         self.__resultsList.addItem(listItem)
         self.__resultsList.setItemWidget(listItem, customItem)
@@ -227,7 +239,7 @@ class MainWindow(QScrollArea):  # {
                 path, filename, filenameMode,
                 content, fileContentMode,
                 self.__token, self.__accountForSearch.text(),
-                self.__addFileToList
+                self.__addFileToList, self.__addRemoteResultToList
             )
         # }
     # }

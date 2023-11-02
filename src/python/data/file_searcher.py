@@ -5,16 +5,13 @@ from os import listdir as listDir
 from os.path import isfile as isFile, join
 import re as RegEx
 
-import requests
+import json as Json
+import asyncio as AsyncIO
+import requests as Requests
 
 from src.python.data.File import File
 from src.python.data.FileContentMode import FileContentMode
 from src.python.data.FilenameMode import FilenameMode
-
-import json as Json
-import requests as Requests
-import asyncio as AsyncIO
-
 from src.python.data.RemoteResult import RemoteResult
 
 UNIVERSAL_EXTENSION: str = ".*"
@@ -115,7 +112,10 @@ def searchLocally(
                 # }
                 try:  # {
                     with open(curPath, "r", encoding="UTF-8") as f:  # {
-                        callback(File(curPath, matchCount, f.read(SYMBOLS_FOR_PREVIEW).strip() + "..."))
+                        callback(File(
+                            curPath, matchCount,
+                            f.read(SYMBOLS_FOR_PREVIEW).strip() + "..."
+                        ))
                     # }
                 # }
                 except (UnicodeError, PermissionError):  # {
@@ -126,7 +126,10 @@ def searchLocally(
                 # }
             # }
             else:  # {
-                searchLocally(curPath, filename, filenameMode, content, fileContentMode, callback, pool)
+                searchLocally(
+                    curPath, filename, filenameMode,
+                    content, fileContentMode, callback, pool
+                )
             # }
         # }
         except FileNotFoundError:  # {
@@ -154,13 +157,14 @@ async def getRemoteResults(
     query: str = f"?q={content.replace(' ', '+')}+{filenamesFilter}+org:{organization}"
     headers: dict[str, str] = {"Authorization": f"Bearer {token}"}
     future = AsyncIO.get_event_loop().run_in_executor(
-        None, lambda: requests.request(
-            "GET", f"https://api.github.com/search/code{query}", headers=headers
+        None, lambda: Requests.request(
+            "GET", f"https://api.github.com/search/code{query}",
+            headers=headers, timeout=15
         ))
     result = await future
     data = Json.loads(result.text)
     for item in data["items"] if "items" in data else []:  # {
-        callback(RemoteResult(item["url"], item["path"]))
+        callback(RemoteResult(item["html_url"], item["path"]))
     # }
 # }
 

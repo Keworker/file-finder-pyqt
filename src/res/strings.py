@@ -17,6 +17,7 @@ signed main(void) {
 SEARCH_FOR_FILES: str = "Start search"
 SELECT_DIRECTORY: str = "Select directory for search"
 VIEW_IN_EXPLORER: str = "View in file explorer"
+OPEN_IN_BROWSER: str = "Open file in browser"
 LOGIN_GITHUB: str = "Login into GitHub with API key"
 EDIT_TOKEN: str = "Edit GitHub token"
 YOUR_GITHUB_API_TOKEN: str = "Your GitHub API token:"
