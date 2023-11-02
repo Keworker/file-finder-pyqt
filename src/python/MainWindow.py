@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.AboutWindow import AboutWindow
+from src.python.data.DAO import DAO
 from src.python.data.File import File
 from src.python.data.FileContentMode import FileContentMode
 from src.python.data.RemoteResult import RemoteResult
@@ -25,15 +26,14 @@ from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
 
 
 class MainWindow(QScrollArea):  # {
-    def __init__(self, application, iconSmallPath: str, iconLargePath: str):  # {
+    def __init__(self, application, iconSmallPath: str, iconLargePath: str, dao: DAO):  # {
         super().__init__()
+        self.__dao: DAO = dao
         self.application = application
         self.__initWidgets(iconSmallPath, iconLargePath)
     # }
 
     def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
-        self.__token = None  # Will be deleted with "Add SQLite DB #12"
-
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
@@ -200,7 +200,7 @@ class MainWindow(QScrollArea):  # {
             YOUR_GITHUB_API_TOKEN
         )
         if (success and text):  # {
-            self.__token = text  # Temp, until "Add SQLite DB #12"
+            self.__dao.addToken(text)
         # }
     # }
 
@@ -238,7 +238,7 @@ class MainWindow(QScrollArea):  # {
             searchFile(
                 path, filename, filenameMode,
                 content, fileContentMode,
-                self.__token, self.__accountForSearch.text(),
+                self.__dao.getToken(), self.__accountForSearch.text(),
                 self.__addFileToList, self.__addRemoteResultToList
             )
         # }
