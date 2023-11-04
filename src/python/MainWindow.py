@@ -1,6 +1,4 @@
-import os
 import pkgutil
-import sys
 from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
@@ -21,6 +19,7 @@ from src.python.view.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
 from src.python.view.RemoteResultItem import RemoteResultItem
 from src.python.view.SortableListWidgetItem import SortableListWidgetItem
+from src.res.drawable import ASSETS_PLACEHOLDER
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, \
@@ -28,20 +27,15 @@ from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     ACCOUNT_FOR_SEARCHING, EDIT_TOKEN, YOUR_GITHUB_API_TOKEN
 
 
-def resource_path(relative_path):  # {
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_path, relative_path)
-# }
-
-
 class MainWindow(QScrollArea):  # {
     def __init__(self, application, iconSmallPath: str, iconLargePath: str, dao: DAO):  # {
         super().__init__()
         self.__dao: DAO = dao
         self.application = application
-        iconLargePixmap = QPixmap(resource_path(iconSmallPath))
-        iconSmallPixmap = QPixmap(resource_path(iconLargePath))
+        iconLargePixmap = QPixmap()
+        iconLargePixmap.loadFromData(pkgutil.get_data(ASSETS_PLACEHOLDER, iconLargePath), iconLargePath.split(".")[-1])
+        iconSmallPixmap = QPixmap()
+        iconSmallPixmap.loadFromData(pkgutil.get_data(ASSETS_PLACEHOLDER, iconSmallPath), iconSmallPath.split(".")[-1])
         self.__initWidgets(QIcon(iconSmallPixmap), iconLargePixmap)
     # }
 

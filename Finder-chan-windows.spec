@@ -5,7 +5,7 @@ a = Analysis(
     ['src/python/application.py'],
     pathex=[],
     binaries=[],
-    datas=[('src/res/assets/icon256.ico', '.'), ('src/res/assets/icon1024.png', '.')],
+    datas=[('src/res/assets/icon256.ico', 'assets'), ('src/res/assets/icon1024.png', 'assets')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
