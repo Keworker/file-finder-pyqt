@@ -15,7 +15,9 @@
 
 # file-finder-pyqt
 
-PyQt program for finding text files by name or content.
+PyQt program for finding text files by name or content. You can search files locally or via GitHub and get all results in one list. 
+
+![20231102080803-5c01416d14 gif-2-mp4 com](https://github.com/Keworker/file-finder-pyqt/assets/84124869/64994816-e183-480e-8722-71c4b228bdf5)
 
 ## Contributing
 
