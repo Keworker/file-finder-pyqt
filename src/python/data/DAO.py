@@ -11,6 +11,11 @@ class DAO:  # {
     # }
 
     def addToken(self, token: str) -> Unit:  # {
+        """
+        Add token for GitHub API
+        :param token: Token to be added
+        :return: Unit (Void (NoReturn))
+        """
         connection: Connection = SQLite.connect(self.__path)
         cursor: Cursor = connection.cursor()
         cursor.execute(f"INSERT INTO token VALUES (NULL, \"{token}\");")
@@ -19,6 +24,10 @@ class DAO:  # {
     # }
 
     def getToken(self) -> str:  # {
+        """
+        Get token for calling GitHub API
+        :return: str
+        """
         connection: Connection = SQLite.connect(self.__path)
         cursor: Cursor = connection.cursor()
         query = list(cursor.execute("SELECT github_token FROM token LIMIT 1;"))
@@ -28,6 +37,11 @@ class DAO:  # {
     # }
 
     def addOrganization(self, name: str) -> Unit:  # {
+        """
+        Add organization to history of GitHub search requests
+        :param name: Name of organization
+        :return: Unit (Void (NoReturn))
+        """
         connection: Connection = SQLite.connect(self.__path)
         cursor: Cursor = connection.cursor()
         cursor.execute(f"INSERT OR IGNORE INTO organizations VALUES (NULL, \"{name}\");")
@@ -36,6 +50,10 @@ class DAO:  # {
     # }
 
     def getOrganizations(self) -> list[str]:  # {
+        """
+        Get list of organizations from history to add suggestions
+        :return: list[str]
+        """
         connection: Connection = SQLite.connect(self.__path)
         cursor: Cursor = connection.cursor()
         query = cursor.execute("SELECT name FROM organizations;")
