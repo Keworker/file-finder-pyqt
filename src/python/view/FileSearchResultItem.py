@@ -44,7 +44,10 @@ class FileSearchResultItem(QWidget):  # {
     # }
 
     def __lt__(self, other):  # {
-        return self.getFile() < other.getFile()
+        if (isinstance(other, FileSearchResultItem)):  # {
+            return self.getFile() < other.getFile()
+        # }
+        return True
     # }
 
     def __onPressed(self) -> Unit:  # {

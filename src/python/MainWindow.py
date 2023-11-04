@@ -3,21 +3,25 @@ from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QLayout, QLabel, QScrollArea, QWidget, QLineEdit, \
     QRadioButton, QTextEdit, QCheckBox, QButtonGroup, \
-    QPushButton, QFileDialog, QListWidgetItem, QSizePolicy
+    QPushButton, QFileDialog, QListWidgetItem, QSizePolicy, QInputDialog
 from PyQt6.QtGui import QIcon, QPixmap, QFont
 
 from src.python.AboutWindow import AboutWindow
 from src.python.data.File import File
 from src.python.data.FileContentMode import FileContentMode
+from src.python.data.RemoteResult import RemoteResult
 from src.python.view.ClickableLabel import ClickableLabel
 from src.python.view.FileSearchResultItem import FileSearchResultItem
 from src.python.data.FilenameMode import FilenameMode
 from src.python.view.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
+from src.python.view.RemoteResultItem import RemoteResultItem
 from src.python.view.SortableListWidgetItem import SortableListWidgetItem
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
-    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, SELECT_DIRECTORY
+    USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, \
+    SELECT_DIRECTORY, USE_GITHUB, LOGIN_GITHUB, \
+    ACCOUNT_FOR_SEARCHING, EDIT_TOKEN, YOUR_GITHUB_API_TOKEN
 
 
 class MainWindow(QScrollArea):  # {
@@ -28,6 +32,8 @@ class MainWindow(QScrollArea):  # {
     # }
 
     def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
+        self.__token = None  # Will be deleted with "Add SQLite DB #12"
+
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
@@ -37,6 +43,7 @@ class MainWindow(QScrollArea):  # {
         root.addLayout(self.__getTitleLayout(APP_TITLE, iconSmallPath, iconLargePath))
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
+        self.__addAll(root, self.__getGitHubEditor())
         root.addWidget(self.__getSearchButton())
         root.addWidget(self.__getSearchResultsList())
         self.setWidget(self.widget)
@@ -120,6 +127,20 @@ class MainWindow(QScrollArea):  # {
         return [self.__useContentCheckbox, buttonGroup, self.__fileContentEditor]
     # }
 
+    def __getGitHubEditor(self) -> Iterable[QObject]:  # {
+        self.__useGitHubCheckbox: QCheckBox = QCheckBox(USE_GITHUB)
+        # noinspection PyUnresolvedReferences
+        self.__useGitHubCheckbox.stateChanged.connect(self.__onGitHubStateChanged)
+        self.__logInGitHub: QPushButton = QPushButton(LOGIN_GITHUB)
+        # noinspection PyUnresolvedReferences
+        self.__logInGitHub.clicked.connect(self.__showGitHubLoginDialog)
+        self.__accountForSearch: QLineEdit = QLineEdit()
+        self.__accountForSearch.setPlaceholderText(ACCOUNT_FOR_SEARCHING)
+        self.__logInGitHub.setVisible(False)
+        self.__accountForSearch.setVisible(False)
+        return [self.__useGitHubCheckbox, self.__logInGitHub, self.__accountForSearch]
+    # }
+
     def __getSearchButton(self) -> QWidget:  # {
         self.__searchButton: QPushButton = QPushButton(SEARCH_FOR_FILES)
         # noinspection PyUnresolvedReferences
@@ -135,10 +156,19 @@ class MainWindow(QScrollArea):  # {
         return self.__resultsList
     # }
 
-    # pylint: disable=unused-private-member
     def __addFileToList(self, file: File) -> Unit:  # {
         listItem: QListWidgetItem = SortableListWidgetItem(self.__resultsList)
         customItem: FileSearchResultItem = FileSearchResultItem(file)
+        listItem.setSizeHint(customItem.sizeHint())
+        self.__resultsList.addItem(listItem)
+        self.__resultsList.setItemWidget(listItem, customItem)
+        self.__resultsList.setFixedHeight(self.__resultsList.sizeHint().height())
+        self.__resultsList.sortItems()
+    # }
+
+    def __addRemoteResultToList(self, file: RemoteResult) -> Unit:  # {
+        listItem: QListWidgetItem = SortableListWidgetItem(self.__resultsList)
+        customItem: RemoteResultItem = RemoteResultItem(file)
         listItem.setSizeHint(customItem.sizeHint())
         self.__resultsList.addItem(listItem)
         self.__resultsList.setItemWidget(listItem, customItem)
@@ -154,8 +184,32 @@ class MainWindow(QScrollArea):  # {
         self.__fileContentEditor.setVisible(state)
     # }
 
+    def __onGitHubStateChanged(self, state: bool) -> Unit:  # {
+        self.__logInGitHub.setVisible(state)
+        self.__accountForSearch.setVisible(state)
+        if (state):  # {
+            self.__extensionRadio.click()
+            self.__ignoreWhitespaceRadio.click()
+        # }
+    # }
+
+    def __showGitHubLoginDialog(self) -> Unit:  # {
+        text, success = QInputDialog().getText(
+            self,
+            EDIT_TOKEN,
+            YOUR_GITHUB_API_TOKEN
+        )
+        if (success and text):  # {
+            self.__token = text  # Temp, until "Add SQLite DB #12"
+        # }
+    # }
+
     # noinspection PyTypeChecker
     def __onSearchPressed(self) -> Unit:  # {
+        if (self.__useGitHubCheckbox.isChecked()):  # {
+            self.__extensionRadio.click()
+            self.__ignoreWhitespaceRadio.click()
+        # }
         path: str = self.__getPathDialog()
         filename: str = self.__filenameEditor.text()
         filenameMode: FilenameMode
@@ -181,7 +235,12 @@ class MainWindow(QScrollArea):  # {
         # }
         if (path):  # {
             self.__resultsList.clear()
-            searchFile(path, filename, filenameMode, content, fileContentMode, self.__addFileToList)
+            searchFile(
+                path, filename, filenameMode,
+                content, fileContentMode,
+                self.__token, self.__accountForSearch.text(),
+                self.__addFileToList, self.__addRemoteResultToList
+            )
         # }
     # }
 # }
