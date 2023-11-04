@@ -1,3 +1,4 @@
+import pkgutil
 from typing import NoReturn as Unit, Iterable
 from PyQt6.QtCore import Qt, QObject
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, \
@@ -18,6 +19,7 @@ from src.python.view.ListViewNoScroll import ListViewNoScroll
 from src.python.data.file_searcher import searchFile
 from src.python.view.RemoteResultItem import RemoteResultItem
 from src.python.view.SortableListWidgetItem import SortableListWidgetItem
+from src.res.drawable import ASSETS_PLACEHOLDER
 from src.res.strings import HINT_EDIT_FILENAME, USE_EXTENSION, USE_REG_EX, \
     APP_TITLE, HINT_EDIT_FILE_CONTENT, \
     USE_CONTENT, DEFAULT_SEARCH, IGNORE_WHITESPACE, SEARCH_FOR_FILES, \
@@ -30,17 +32,21 @@ class MainWindow(QScrollArea):  # {
         super().__init__()
         self.__dao: DAO = dao
         self.application = application
-        self.__initWidgets(iconSmallPath, iconLargePath)
+        iconLargePixmap = QPixmap()
+        iconLargePixmap.loadFromData(pkgutil.get_data(ASSETS_PLACEHOLDER, iconLargePath), iconLargePath.split(".")[-1])
+        iconSmallPixmap = QPixmap()
+        iconSmallPixmap.loadFromData(pkgutil.get_data(ASSETS_PLACEHOLDER, iconSmallPath), iconSmallPath.split(".")[-1])
+        self.__initWidgets(QIcon(iconSmallPixmap), iconLargePixmap)
     # }
 
-    def __initWidgets(self, iconSmallPath: str, iconLargePath: str) -> Unit:  # {
+    def __initWidgets(self, iconSmallIcon: QIcon, iconLargePixmap: QPixmap) -> Unit:  # {
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
         self.widget = QWidget()
         root: QVBoxLayout = QVBoxLayout(self.widget)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
-        root.addLayout(self.__getTitleLayout(APP_TITLE, iconSmallPath, iconLargePath))
+        root.addLayout(self.__getTitleLayout(APP_TITLE, iconSmallIcon, iconLargePixmap))
         self.__addAll(root, self.__getFilenameEditor(root))
         self.__addAll(root, self.__getContentEditor(root))
         self.__addAll(root, self.__getGitHubEditor())
@@ -48,7 +54,7 @@ class MainWindow(QScrollArea):  # {
         root.addWidget(self.__getSearchResultsList())
         self.setWidget(self.widget)
         self.setWindowTitle(APP_TITLE)
-        self.setWindowIcon(QIcon(iconSmallPath))
+        self.setWindowIcon(iconSmallIcon)
         self.showMaximized()
     # }
 
@@ -65,7 +71,7 @@ class MainWindow(QScrollArea):  # {
         # }
     # }
 
-    def __getTitleLayout(self, title: str, iconSmallPath: str, iconLargePath: str) -> QLayout:  # {
+    def __getTitleLayout(self, title: str, iconSmall: QIcon, iconLargePixmap: QPixmap) -> QLayout:  # {
         titleContainer: QHBoxLayout = QHBoxLayout()
         title: QLabel = QLabel(title)
         font: QFont = title.font()
@@ -73,10 +79,10 @@ class MainWindow(QScrollArea):  # {
         title.setFont(font)
         title.setMaximumHeight(title.fontMetrics().height() * 4)
         icon: ClickableLabel = ClickableLabel()
-        pixmap: QPixmap = QPixmap(iconLargePath)
+        pixmap: QPixmap = iconLargePixmap
         icon.setPixmap(pixmap.scaledToHeight(title.height()))
         icon.setOnClickListener(
-            lambda: AboutWindow(self.application, QIcon(iconSmallPath), pixmap)
+            lambda: AboutWindow(self.application, iconSmall, pixmap)
         )
         titleContainer.setAlignment(Qt.AlignmentFlag.AlignLeft)
         titleContainer.addWidget(icon)
