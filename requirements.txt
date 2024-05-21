@@ -6,4 +6,4 @@ PyQt6==6.6.1
 PyQt6-Qt6==6.6.3
 PyQt6-sip==13.6.0
 qt-material==2.14
-requests==2.31.0
+requests==2.32.0
