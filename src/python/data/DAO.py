@@ -33,7 +33,12 @@ class DAO:  # {
         query = list(cursor.execute("SELECT github_token FROM token LIMIT 1;"))
         DAO.__logTokenAccess(cursor)
         connection.close()
-        return query[0][0]
+        try:  # {
+            return query[0][0]
+        # }
+        except IndexError:  # {
+            return None
+        # }
     # }
 
     def addOrganization(self, name: str) -> Unit:  # {
