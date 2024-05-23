@@ -14,7 +14,7 @@ class FileSearchResultItem(QWidget):  # {
         super().__init__()
         self.__file: File = file
         root: QVBoxLayout = QVBoxLayout(self)
-        name: QLabel = QLabel(file.path)
+        name: QLabel = QLabel(file.path.replace("\\", "/"))
         hBox: QHBoxLayout = QHBoxLayout()
         count: QLabel = QLabel(str(file.matchCount))
         count.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
